@@ -213,7 +213,7 @@ if(!$json_decode){
             <p>&nbsp;</p>
             <p>${(card.from == "-" ? "" : " <small style='color:red; float: left'>"+card.from+"-&gt;<br></small>")} <strong style="font-size: 13px">${card.name}</strong> <span style="color: darkblue">[${card.type_of_pokemon}]</span><br/><small style="font-style: italic; font-size: 9px;">${card.description}</small></p>
         `;
-        cardDiv.style = `background-image: url('${card.img}'); background-size: ${30+10*card.cost}%;`
+        cardDiv.style = `background-image: url('${card.img}'); background-size: ${45+8*card.cost}%;`
         return cardDiv;
     }
 
