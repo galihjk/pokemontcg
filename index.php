@@ -146,15 +146,18 @@ if (($handle = fopen($csvFile, 'r')) !== FALSE) {
             padding: 10mm;
             box-sizing: border-box;
         }
-
-        .card {
+        .card-container {
             border: 2px solid gray;
             border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .card {
             padding-top: 5px;
             padding-left: 5px;
             padding-right: 5px;
             padding-bottom: 0;
-            box-sizing: border-box;
+            height: 100%;
             text-align: center;
             font-size: 12px;
             display: flex;
@@ -193,7 +196,48 @@ if(!$json_decode){
 ?>
 <script>
     const cardsData = <?=$json_decode?>;
+
+    function getGradientBackground(pokemonTypes) {
+    const typeColors = {
+        fire: '#fcc7c7',
+        water: '#c7e4fc',
+        grass: '#d6f7d6',
+        electric: '#fdf6c1',
+        ice: '#d1e6f4',
+        rock: '#e2d9c8',
+        ghost: '#f0e3f9',
+        poison: '#e1c7f5',
+        bug: '#d3f7b3',
+        normal: '#f0f0f0',
+        flying: '#e4f3ff',
+        ground: '#efded6',
+        fighting: '#f2d4d2',
+        psychic: '#f4c4e1',
+        fairy: '#fcd8e9',
+        steel: '#d9d9d9',
+        dragon: '#f0c6c7',
+        dark: '#e5e1d3'
+    };
+
+    // Split the types and get the corresponding colors
+    const types = pokemonTypes.split(',').map(type => type.trim());
+    const colors = types.map(type => typeColors[type.toLowerCase()]).filter(Boolean);
+
+    // Generate the gradient
+    if (colors.length === 1) {
+        // Single type: gradient from color to white and back to color
+        return `background: linear-gradient(to right, ${colors[0]} 0%, #ffffff 50%, ${colors[0]} 100%)`;
+    } else if (colors.length === 2) {
+        // Two types: gradient from first color to white to second color
+        return `background: linear-gradient(to right, ${colors[0]} 0%, #ffffff 50%, ${colors[1]} 100%)`;
+        } else {
+            return 'background: none'; // Return none if no valid types
+        }
+    }
+
     function createCardElement(card) {
+        const cardDivContainer = document.createElement('div');
+        cardDivContainer.className = 'card-container';
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card';
         cardDiv.innerHTML = `
@@ -213,8 +257,10 @@ if(!$json_decode){
             <p>&nbsp;</p>
             <p>${(card.from == "-" ? "" : " <small style='color:red; float: left'>"+card.from+"-&gt;<br></small>")} <strong style="font-size: 13px">${card.name}</strong> <span style="color: darkblue">[${card.type_of_pokemon}]</span><br/><small style="font-style: italic; font-size: 9px;">${card.description}</small></p>
         `;
-        cardDiv.style = `background-image: url('${card.img}'); background-size: ${45+8*card.cost}%;`
-        return cardDiv;
+        cardDiv.style = `background-image: url('${card.img}'); background-size: ${card.name.substring(0,11) == "Gigantamax " ? 136 : 46+7*card.cost}%;`
+        cardDivContainer.appendChild(cardDiv);
+        cardDivContainer.style = getGradientBackground(card.type_of_pokemon);
+        return cardDivContainer;
     }
 
     function loadCards() {
